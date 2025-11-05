@@ -13,7 +13,6 @@ namespace Recorderfy.User.Service.BLL.Services;
 public class PacienteService : IPacienteService
 {
     private readonly ApplicationDbContext _context;
-    private const int ROL_PACIENTE = 3; // Asume que ID 3 es el rol Paciente
 
     public PacienteService(ApplicationDbContext context)
     {
@@ -54,7 +53,7 @@ public class PacienteService : IPacienteService
             Email = dto.Email,
             Telefono = dto.Telefono,
             PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password),
-            IdRol = ROL_PACIENTE,
+            IdRol = dto.IdRol,
             Genero = dto.Genero,
             FechaNacimiento = dto.FechaNacimiento,
             FechaRegistro = DateTime.Now,
@@ -72,7 +71,12 @@ public class PacienteService : IPacienteService
         _context.Pacientes.Add(paciente);
         await _context.SaveChangesAsync();
 
-        return await GetPacienteByIdAsync(paciente.IdUsuario) ?? throw new Exception("Error al crear paciente");
+        var savedPaciente = await GetPacienteByIdAsync(paciente.IdUsuario);
+
+        if (savedPaciente == null)
+            throw new Exception("No se pudo recuperar el médico después de guardarlo.");
+
+        return savedPaciente;
     }
 
     public async Task<PacienteDto?> GetPacienteByIdAsync(Guid id)

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Recorderfy.User.Service.BLL.Interfaces;
 using Recorderfy.User.Service.DAL.Data;
 using Recorderfy.User.Service.Model.DTOs;
@@ -13,7 +14,6 @@ namespace Recorderfy.User.Service.BLL.Services;
 public class MedicoService : IMedicoService
 {
     private readonly ApplicationDbContext _context;
-    private const int ROL_MEDICO = 2; // Asume que ID 2 es el rol Médico
 
     public MedicoService(ApplicationDbContext context)
     {
@@ -39,7 +39,7 @@ public class MedicoService : IMedicoService
             Email = dto.Email,
             Telefono = dto.Telefono,
             PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password),
-            IdRol = ROL_MEDICO,
+            IdRol = dto.IdRol,
             Genero = dto.Genero,
             FechaNacimiento = dto.FechaNacimiento,
             FechaRegistro = DateTime.Now,
@@ -55,7 +55,12 @@ public class MedicoService : IMedicoService
         _context.Medicos.Add(medico);
         await _context.SaveChangesAsync();
 
-        return MapToDto(medico);
+        var savedMedico = await GetMedicoByIdAsync(medico.IdUsuario);
+
+        if (savedMedico == null)
+            throw new Exception("No se pudo recuperar el médico después de guardarlo.");
+
+        return savedMedico;
     }
 
     public async Task<MedicoDto?> GetMedicoByIdAsync(Guid id)

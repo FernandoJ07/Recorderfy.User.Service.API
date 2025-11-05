@@ -14,6 +14,7 @@ public abstract class BaseUsuarioDto
     public string Email { get; set; } = null!;
     public string? Telefono { get; set; }
     public string Password { get; set; } = null!; // Se hasheará en el servicio
+    public int IdRol { get; set; }
     public string? Genero { get; set; }
     public DateOnly FechaNacimiento { get; set; }
     public string? FotoPerfil { get; set; }

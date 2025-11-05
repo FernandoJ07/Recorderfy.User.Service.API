@@ -40,7 +40,7 @@ namespace Recorderfy.User.Service.BLL.Services
                     Email = dto.Email,
                     Telefono = dto.Telefono,
                     PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password),
-                    IdRol = 1,
+                    IdRol = dto.IdRol,
                     Genero = dto.Genero,
                     FechaNacimiento = dto.FechaNacimiento,
                     FechaRegistro = DateTime.Now,
@@ -56,7 +56,12 @@ namespace Recorderfy.User.Service.BLL.Services
                 _context.Cuidadores.Add(cuidador);
                 await _context.SaveChangesAsync();
 
-                return MapToDto(cuidador);
+                var savedCuidador = await GetCuidadorByIdAsync(cuidador.IdUsuario);
+
+                if (savedCuidador == null)
+                    throw new Exception("No se pudo recuperar el médico después de guardarlo.");
+
+                return savedCuidador;
             }
             catch (InvalidOperationException ex)
             {
