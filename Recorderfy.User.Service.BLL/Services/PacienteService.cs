@@ -28,21 +28,6 @@ public class PacienteService : IPacienteService
         if (exists)
             throw new InvalidOperationException("Ya existe un usuario con ese email o documento");
 
-        // Validar que el cuidador y médico existan si se proporcionan
-        if (dto.IdCuidador.HasValue)
-        {
-            var cuidadorExists = await _context.Cuidadores.AnyAsync(c => c.IdUsuario == dto.IdCuidador.Value);
-            if (!cuidadorExists)
-                throw new InvalidOperationException("El cuidador especificado no existe");
-        }
-
-        if (dto.IdMedico.HasValue)
-        {
-            var medicoExists = await _context.Medicos.AnyAsync(m => m.IdUsuario == dto.IdMedico.Value);
-            if (!medicoExists)
-                throw new InvalidOperationException("El médico especificado no existe");
-        }
-
         var paciente = new Paciente
         {
             IdUsuario = Guid.NewGuid(),
