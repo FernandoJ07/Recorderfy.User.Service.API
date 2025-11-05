@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Recorderfy.User.Service.Api.Consumer;
 using Recorderfy.User.Service.BLL.Interfaces;
 using Recorderfy.User.Service.BLL.Services;
 using Recorderfy.User.Service.DAL.Data;
@@ -18,6 +19,7 @@ builder.Services.AddScoped<IUsuarioService, UsuarioService>();
 builder.Services.AddScoped<IMedicoService, MedicoService>();
 builder.Services.AddScoped<ICuidadorService, CuidadorService>();
 builder.Services.AddScoped<IPacienteService, PacienteService>();
+builder.Services.AddHostedService<RabbitMqConsumer>();
 
 
 // Add services to the container.
