@@ -14,6 +14,9 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 // Repositorios genéricos
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 
+// Repositorios específicos
+builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
+
 // Servicios de negocio
 builder.Services.AddScoped<IUsuarioService, UsuarioService>();
 builder.Services.AddScoped<IMedicoService, MedicoService>();

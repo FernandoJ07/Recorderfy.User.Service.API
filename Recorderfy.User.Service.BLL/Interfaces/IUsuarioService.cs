@@ -1,4 +1,5 @@
 ﻿using Recorderfy.User.Service.Model.Entities;
+using Recorderfy.User.Service.Model.DTOs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,5 +15,6 @@ namespace Recorderfy.User.Service.BLL.Interfaces
         Task<Usuario> CreateAsync(Usuario usuario);
         Task<Usuario?> UpdateAsync(Usuario usuario);
         Task<bool> DeleteAsync(Guid id);
+        Task<LoginResponseDto> LoginAsync(LoginDto loginDto);
     }
 }
