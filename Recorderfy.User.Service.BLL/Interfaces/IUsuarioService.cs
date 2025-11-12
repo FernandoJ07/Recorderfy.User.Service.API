@@ -16,5 +16,6 @@ namespace Recorderfy.User.Service.BLL.Interfaces
         Task<Usuario?> UpdateAsync(Usuario usuario);
         Task<bool> DeleteAsync(Guid id);
         Task<LoginResponseDto> LoginAsync(LoginDto loginDto);
+        Task<UsuarioDto?> GetByDocumentAndRoleAsync(string nroDocumento, int idRol);
     }
 }

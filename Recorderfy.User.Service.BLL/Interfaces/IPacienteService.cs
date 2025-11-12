@@ -12,4 +12,6 @@ public interface IPacienteService
     Task<IEnumerable<PacienteDto>> GetAllPacientesAsync();
     Task<PacienteDto?> UpdatePacienteAsync(Guid id, CreatePacienteDto dto);
     Task<bool> DeletePacienteAsync(Guid id);
+    Task<IEnumerable<PacienteDto>> GetPacientesByMedicoIdAsync(Guid medicoId);
+    Task<IEnumerable<PacienteDto>> GetPacientesByCuidadorIdAsync(Guid cuidadorId);
 }

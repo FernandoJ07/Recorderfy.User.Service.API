@@ -104,6 +104,35 @@ namespace Recorderfy.User.Service.BLL.Services
             }
         }
 
+        public async Task<UsuarioDto?> GetByDocumentAndRoleAsync(string nroDocumento, int idRol)
+        {
+            try
+            {
+                var usuarios = await _usuarioRepo.GetAllAsync();
+                var usuario = usuarios.FirstOrDefault(u => 
+                    u.NroDocumento == nroDocumento && u.IdRol == idRol);
+
+                if (usuario == null)
+                {
+                    return null;
+                }
+
+                // Cargar navegaciones manualmente si es necesario
+                var usuarioConRelaciones = await _usuarioRepo.GetByIdAsync(usuario.IdUsuario);
+                
+                if (usuarioConRelaciones == null)
+                {
+                    return null;
+                }
+
+                return MapToDto(usuarioConRelaciones);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
         private static UsuarioDto MapToDto(Usuario usuario)
         {
             return new UsuarioDto

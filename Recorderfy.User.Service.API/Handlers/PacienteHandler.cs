@@ -203,4 +203,84 @@ public class PacienteHandler
             };
         }
     }
+
+    public async Task<object> HandleGetByMedicoIdAsync(
+        IPacienteService service,
+        string message,
+        string correlationId,
+        ILogger logger)
+    {
+        try
+        {
+            var request = JsonSerializer.Deserialize<JsonElement>(message);
+            var medicoId = Guid.Parse(request.GetProperty("MedicoId").GetString()!);
+
+            var result = await service.GetPacientesByMedicoIdAsync(medicoId);
+
+            logger.LogInformation(
+                "[{CorrelationId}] Pacientes obtenidos por médico - MedicoId: {MedicoId}, Total: {Count}",
+                correlationId, medicoId, result.Count());
+
+            return new
+            {
+                success = true,
+                data = result,
+                count = result.Count(),
+                timestamp = DateTime.UtcNow
+            };
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex,
+                "[{CorrelationId}] Error al obtener pacientes por médico",
+                correlationId);
+
+            return new
+            {
+                success = false,
+                error = ex.Message,
+                timestamp = DateTime.UtcNow
+            };
+        }
+    }
+
+    public async Task<object> HandleGetByCuidadorIdAsync(
+        IPacienteService service,
+        string message,
+        string correlationId,
+        ILogger logger)
+    {
+        try
+        {
+            var request = JsonSerializer.Deserialize<JsonElement>(message);
+            var cuidadorId = Guid.Parse(request.GetProperty("CuidadorId").GetString()!);
+
+            var result = await service.GetPacientesByCuidadorIdAsync(cuidadorId);
+
+            logger.LogInformation(
+                "[{CorrelationId}] Pacientes obtenidos por cuidador - CuidadorId: {CuidadorId}, Total: {Count}",
+                correlationId, cuidadorId, result.Count());
+
+            return new
+            {
+                success = true,
+                data = result,
+                count = result.Count(),
+                timestamp = DateTime.UtcNow
+            };
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex,
+                "[{CorrelationId}] Error al obtener pacientes por cuidador",
+                correlationId);
+
+            return new
+            {
+                success = false,
+                error = ex.Message,
+                timestamp = DateTime.UtcNow
+            };
+        }
+    }
 }

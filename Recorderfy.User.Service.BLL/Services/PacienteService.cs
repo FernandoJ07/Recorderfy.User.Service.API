@@ -123,6 +123,32 @@ public class PacienteService : IPacienteService
         return true;
     }
 
+    public async Task<IEnumerable<PacienteDto>> GetPacientesByMedicoIdAsync(Guid medicoId)
+    {
+        var pacientes = await _context.Pacientes
+            .Include(p => p.IdRolNavigation)
+            .Include(p => p.IdTipoDocumentoNavigation)
+            .Include(p => p.Cuidador)
+            .Include(p => p.Medico)
+            .Where(p => p.IdMedico == medicoId)
+            .ToListAsync();
+
+        return pacientes.Select(MapToDto);
+    }
+
+    public async Task<IEnumerable<PacienteDto>> GetPacientesByCuidadorIdAsync(Guid cuidadorId)
+    {
+        var pacientes = await _context.Pacientes
+            .Include(p => p.IdRolNavigation)
+            .Include(p => p.IdTipoDocumentoNavigation)
+            .Include(p => p.Cuidador)
+            .Include(p => p.Medico)
+            .Where(p => p.IdCuidador == cuidadorId)
+            .ToListAsync();
+
+        return pacientes.Select(MapToDto);
+    }
+
     private static PacienteDto MapToDto(Paciente paciente)
     {
         return new PacienteDto

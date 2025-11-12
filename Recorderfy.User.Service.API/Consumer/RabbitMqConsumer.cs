@@ -69,6 +69,8 @@ public class RabbitMqConsumer : BackgroundService
                 "user.api.paciente.delete",
                 "user.api.paciente.getById",
                 "user.api.paciente.getAll",
+                "user.api.paciente.getByMedicoId",
+                "user.api.paciente.getByCuidadorId",
                 
                 // Medico
                 "user.api.medico.create",
@@ -82,7 +84,11 @@ public class RabbitMqConsumer : BackgroundService
                 "user.api.cuidador.update",
                 "user.api.cuidador.delete",
                 "user.api.cuidador.getById",
-                "user.api.cuidador.getAll"
+                "user.api.cuidador.getAll",
+
+                // Auth
+                "user.api.auth.login",
+                "user.api.auth.getByDocumentAndRole"
             };
 
             foreach (var routingKey in routingKeys)
@@ -179,7 +185,7 @@ public class RabbitMqConsumer : BackgroundService
         var parts = routingKey.Split('.');
         if (parts.Length < 3) return CreateErrorResponse("Routing key inválido");
 
-        var entity = parts[2]; // paciente, medico, cuidador
+        var entity = parts[2]; // paciente, medico, cuidador, auth
         var action = parts.Length > 3 ? parts[3] : "unknown";
 
         return entity switch
@@ -187,6 +193,7 @@ public class RabbitMqConsumer : BackgroundService
             "paciente" => await ProcessPacienteAsync(action, message, correlationId, scope),
             "medico" => await ProcessMedicoAsync(action, message, correlationId, scope),
             "cuidador" => await ProcessCuidadorAsync(action, message, correlationId, scope),
+            "auth" => await ProcessAuthAsync(action, message, correlationId, scope),
             _ => CreateErrorResponse($"Entidad desconocida: {entity}")
         };
     }
@@ -207,6 +214,8 @@ public class RabbitMqConsumer : BackgroundService
             "delete" => await handler.HandleDeleteAsync(service, message, correlationId, _logger),
             "getById" => await handler.HandleGetByIdAsync(service, message, correlationId, _logger),
             "getAll" => await handler.HandleGetAllAsync(service, correlationId, _logger),
+            "getByMedicoId" => await handler.HandleGetByMedicoIdAsync(service, message, correlationId, _logger),
+            "getByCuidadorId" => await handler.HandleGetByCuidadorIdAsync(service, message, correlationId, _logger),
             _ => CreateErrorResponse($"Acción desconocida: {action}")
         };
     }
@@ -247,6 +256,23 @@ public class RabbitMqConsumer : BackgroundService
             "delete" => await handler.HandleDeleteAsync(service, message, correlationId, _logger),
             "getById" => await handler.HandleGetByIdAsync(service, message, correlationId, _logger),
             "getAll" => await handler.HandleGetAllAsync(service, correlationId, _logger),
+            _ => CreateErrorResponse($"Acción desconocida: {action}")
+        };
+    }
+
+    private async Task<object> ProcessAuthAsync(
+        string action,
+        string message,
+        string correlationId,
+        IServiceScope scope)
+    {
+        var service = scope.ServiceProvider.GetRequiredService<IUsuarioService>();
+        var handler = new AuthHandler();
+
+        return action switch
+        {
+            "login" => await handler.HandleLoginAsync(service, message, correlationId, _logger),
+            "getByDocumentAndRole" => await handler.HandleGetByDocumentAndRoleAsync(service, message, correlationId, _logger),
             _ => CreateErrorResponse($"Acción desconocida: {action}")
         };
     }
